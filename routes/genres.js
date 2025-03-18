@@ -64,21 +64,24 @@ router.post("/", async (req, res) => {
   }
 });
 //update the genre
-router.put("/:id", (req, res) => {
-  const genre = genres.find((c) => c.id === parseInt(req.params.id));
-  if (!genre) return res.status(404).send("ID is not found");
-  const { error } = validateGenres(req);
+router.put("/:id", async (req, res) => {
+  const { error } = validateGenres(req.body);
   if (error) return res.status(404).send(error);
-  genre.genre = req.body.genre;
+  const genre = await Genre.findByIdAndUpdate(
+    req.params.id,
+    { genre: req.body.genre },
+    { new: true }
+  );
+  if (!genre) return res.status(404).send("ID is not found");
+
   return res.send(
     `succcessfully updated the id:${req.params.id} with ${req.body.genre}`
   );
 });
 //delete the genre
-router.delete("/:id", (req, res) => {
-  const genre = genres.find((c) => c.id === parseInt(req.params.id));
+router.delete("/:id", async (req, res) => {
+  const genre = await Genre.findByIdAndDelete(req.params.id);
   if (!genre) return res.status(404).send("ID is not found");
-  genres.splice(req.params.id - 1, 1);
   return res.send(`sucessfully deleted the id ${req.params.id}`);
 });
 
