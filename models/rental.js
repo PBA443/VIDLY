@@ -61,13 +61,13 @@ const Rental = new mongoose.model(
 //validate the genres
 function validateRental(rental) {
   const schema = Joi.object({
-    customerId: Joi.string().required().messages({
-      "string.base": "customerId must be a string",
+    customerId: Joi.objectId().required().messages({
+      //"string.base": "customerId must be a string",
       "string.empty": "customerId cannot be empty",
       "any.required": "customerId is required",
     }),
-    movieId: Joi.string().required().messages({
-      "string.base": "movieId must be a string",
+    movieId: Joi.objectId().required().messages({
+      //"string.base": "movieId must be a string",
       "string.empty": "movieId cannot be empty",
       "any.required": "movieId is required",
     }),
