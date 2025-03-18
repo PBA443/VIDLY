@@ -6,8 +6,8 @@ const { Customer, validate } = require("../models/customer");
 //get genres of VIDLY
 router.get("/", async (req, res) => {
   try {
-    const movies = await Customer.find(); // Await the async function
-    res.send(movies);
+    const customer = await Customer.find(); // Await the async function
+    res.send(customer);
   } catch (error) {
     console.error("Error in route handler:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Send a 500 error response

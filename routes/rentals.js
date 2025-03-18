@@ -1,13 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const { validate, Genre } = require("../models/genre");
+const { validate, Rental } = require("../models/rental");
+const { Customer } = require("../models/customer");
+const { Movie } = require("../models/movie");
 
-//get genres of VIDLY
 router.get("/", async (req, res) => {
   try {
-    const genre = await Genre.find(); // Await the async function
-    res.send(genre);
+    const rentals = await Rental.find().sort("-dateOut"); // Await the async function
+    res.send(rentals);
   } catch (error) {
     console.error("Error in route handler:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Send a 500 error response
@@ -16,8 +17,8 @@ router.get("/", async (req, res) => {
 //get genres by id
 router.get("/:id", async (req, res) => {
   try {
-    const genre = await Genre.findById(req.params.id); // Query the database
-    if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
+    const genre = await Rental.findById(req.params.id); // Query the database
+    if (!genre) return res.status(404).json({ message: "Rental not found" }); // Handle not found
     res.json(genre); // Send the genre as JSON
   } catch (error) {
     console.error("Error fetching genre:", error.message);
@@ -26,19 +27,40 @@ router.get("/:id", async (req, res) => {
 });
 //insert genres for VIDLY
 router.post("/", async (req, res) => {
+  const session = await mongoose.startSession(); // Start a session
+  session.startTransaction(); // Start a transaction
   try {
     // Validate the request body
     const { error } = validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message }); // Return validation error
+    const customer = Movie.findById(req.body.customerId);
+    if (!customer) return res.status(400).send("Invalid Customer");
 
+    const movie = await Customer.findById(req.body.customerId);
+    if (!movie) return res.status(400).send("Invalid Movie");
+
+    if (movie.numberInStock === 0)
+      return res.status(400).send("Movie not in stock.");
     // Create a new genre object
-    const genre = new Genre({
-      name: req.body.genre,
+    const rental = new Rental({
+      customer: {
+        _id: customer._id,
+        name: customer.name,
+        phone: customer.phone,
+      },
+      movie: {
+        _id: movie._id,
+        movieName: movie.movieName,
+        dailyRentalRate: movie.dailyRentalRate,
+      },
     });
 
     // Save the genre to the database
-    const result = await genre.save();
+    const result = await rental.save();
+
+    movie.numberInStock--;
+    movie.save();
 
     // Return the new genre
     res.status(201).json(result); // 201 Created status code
@@ -51,7 +73,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error);
-  const genre = await Genre.findByIdAndUpdate(req.params.id, {
+  const genre = await Rental.findByIdAndUpdate(req.params.id, {
     name: req.body.genre,
   });
   if (!genre) return res.status(404).send("ID is not found");
@@ -62,7 +84,7 @@ router.put("/:id", async (req, res) => {
 });
 //delete the genre
 router.delete("/:id", async (req, res) => {
-  const genre = await Genre.findByIdAndDelete(req.params.id);
+  const genre = await Rental.findByIdAndDelete(req.params.id);
   if (!genre) return res.status(404).send("ID is not found");
   return res.send(`sucessfully deleted the id ${req.params.id}`);
 });

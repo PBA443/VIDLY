@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const genres = require("./routes/genres");
 const customer = require("./routes/customers");
+const movies = require("./routes/movies");
 app.use(express.json());
 const port = process.env.PORT || 3000;
 mongoose
@@ -16,6 +17,7 @@ mongoose
   });
 app.use("/api/genres", genres);
 app.use("/api/customers", customer);
+app.use("/api/movies", movies);
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}...`);
 });
