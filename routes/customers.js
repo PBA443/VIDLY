@@ -1,12 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const { validate, Genre } = require("../models/genre");
+const { Customer, validate } = require("../models/customer");
 
 //get genres of VIDLY
 router.get("/", async (req, res) => {
   try {
-    const movies = await Genre.find(); // Await the async function
+    const movies = await Customer.find(); // Await the async function
     res.send(movies);
   } catch (error) {
     console.error("Error in route handler:", error.message);
@@ -16,9 +16,10 @@ router.get("/", async (req, res) => {
 //get genres by id
 router.get("/:id", async (req, res) => {
   try {
-    const genre = await Genre.findById(req.params.id); // Query the database
-    if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
-    res.json(genre); // Send the genre as JSON
+    const customer = await Customer.findById(req.params.id); // Query the database
+    if (!customer)
+      return res.status(404).json({ message: "Customer not found" }); // Handle not found
+    res.json(customer); // Send the genre as JSON
   } catch (error) {
     console.error("Error fetching genre:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Handle errors
@@ -33,13 +34,14 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ message: error.details[0].message }); // Return validation error
 
     // Create a new genre object
-    const genre = new Genre({
-      genre: req.body.genre,
-      movies: req.body.movies, // Use the movies array directly from the request body
+    const customer = new Customer({
+      isGold: req.body.isGold,
+      name: req.body.name,
+      phone: req.body.phone, // Use the movies array directly from the request body
     });
 
     // Save the genre to the database
-    const result = await genre.save();
+    const result = await customer.save();
 
     // Return the new genre
     res.status(201).json(result); // 201 Created status code
@@ -52,12 +54,12 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error);
-  const genre = await Genre.findByIdAndUpdate(
+  const customer = await Customer.findByIdAndUpdate(
     req.params.id,
-    { genre: req.body.genre },
+    { name: req.body.name },
     { new: true }
   );
-  if (!genre) return res.status(404).send("ID is not found");
+  if (!customer) return res.status(404).send("ID is not found");
 
   return res.send(
     `succcessfully updated the id:${req.params.id} with ${req.body.genre}`
@@ -65,8 +67,8 @@ router.put("/:id", async (req, res) => {
 });
 //delete the genre
 router.delete("/:id", async (req, res) => {
-  const genre = await Genre.findByIdAndDelete(req.params.id);
-  if (!genre) return res.status(404).send("ID is not found");
+  const customer = await Customer.findByIdAndDelete(req.params.id);
+  if (!customer) return res.status(404).send("ID is not found");
   return res.send(`sucessfully deleted the id ${req.params.id}`);
 });
 
