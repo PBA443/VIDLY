@@ -27,17 +27,15 @@ router.get("/:id", async (req, res) => {
 });
 //insert genres for VIDLY
 router.post("/", async (req, res) => {
-  const session = await mongoose.startSession(); // Start a session
-  session.startTransaction(); // Start a transaction
   try {
     // Validate the request body
     const { error } = validate(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message }); // Return validation error
-    const customer = Movie.findById(req.body.customerId);
-    if (!customer) return res.status(400).send("Invalid Customer");
 
-    const movie = await Customer.findById(req.body.customerId);
+    const customer = await Customer.findById(req.body.customerId);
+    if (!customer) return res.status(400).send("Invalid Customer");
+    const movie = await Movie.findById(req.body.movieId);
     if (!movie) return res.status(400).send("Invalid Movie");
 
     if (movie.numberInStock === 0)
@@ -65,7 +63,7 @@ router.post("/", async (req, res) => {
     // Return the new genre
     res.status(201).json(result); // 201 Created status code
   } catch (error) {
-    console.error("Error creating genre:", error.message);
+    console.error("Error creating rental", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Handle errors
   }
 });
