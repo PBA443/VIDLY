@@ -1,4 +1,5 @@
 require("express-async-errors");
+const winston = require("winston");
 const error = require("./middleware/error");
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
@@ -12,6 +13,8 @@ const movies = require("./routes/movies");
 const rentals = require("./routes/rentals");
 const registers = require("./routes/users");
 const auth = require("./routes/auth");
+
+winston.add(new winston.transports.File({ filename: "logfile.log" }));
 
 if (!process.env.JWT_SECRET) {
   console.error("FATAL ERROR: jwt secret is not defined.");
