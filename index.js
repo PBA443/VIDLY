@@ -8,6 +8,7 @@ const genres = require("./routes/genres");
 const customer = require("./routes/customers");
 const movies = require("./routes/movies");
 const rentals = require("./routes/rentals");
+const registers = require("./routes/users");
 
 app.use(express.json());
 
@@ -26,6 +27,7 @@ app.use("/api/genres", genres);
 app.use("/api/customers", customer);
 app.use("/api/movies", movies);
 app.use("/api/rentals", rentals);
+app.use("/api/users", registers);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}...`);
