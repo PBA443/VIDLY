@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const mongoose = require("mongoose");
 const { joiPasswordExtendCore } = require("joi-password");
@@ -19,6 +20,11 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+  return token;
+};
 
 // Create the Genre model
 const User = new mongoose.model("User", userSchema);

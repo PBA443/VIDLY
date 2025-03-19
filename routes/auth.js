@@ -23,7 +23,8 @@ router.post("/", async (req, res) => {
     if (!validPassword)
       return res.status(400).send("Invalid email or password");
     // Return the new genre
-    res.send("true");
+    const token = user.generateAuthToken();
+    res.send(token);
   } catch (error) {
     console.error("Error authenticating user:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Handle errors
