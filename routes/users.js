@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const { validate, User } = require("../models/user");
-
+const _ = require("lodash");
 /* //get genres of VIDLY
 router.get("/", async (req, res) => {
   try {
@@ -35,17 +35,11 @@ router.post("/", async (req, res) => {
     if (isOldUser) return res.status(400).send("User is already registered.");
 
     // Create a new user object
-    const user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-    });
-
+    const user = new User(_.pick(req.body, ["name", "email", "password"]));
     // Save the genre to the database
-    const result = await user.save();
-
+    await user.save();
     // Return the new genre
-    res.status(201).json(result); // 201 Created status code
+    res.status(201).json(_.pick(user, ["name", "email"])); // 201 Created status code
   } catch (error) {
     console.error("Error creating user:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Handle errors
