@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
@@ -36,6 +37,8 @@ router.post("/", async (req, res) => {
 
     // Create a new user object
     const user = new User(_.pick(req.body, ["name", "email", "password"]));
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
     // Save the genre to the database
     await user.save();
     // Return the new genre
