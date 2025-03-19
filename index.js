@@ -11,6 +11,11 @@ const rentals = require("./routes/rentals");
 const registers = require("./routes/users");
 const auth = require("./routes/auth");
 
+if (!process.env.JWT_SECRET) {
+  console.error("FATAL ERROR: jwt secret is not defined.");
+  process.exit(1);
+}
+
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
