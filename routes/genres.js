@@ -1,4 +1,3 @@
-const asyncMiddleware = require("../middleware/async");
 const admin = require("../middleware/admin");
 const auth = require("../middleware/auth");
 const express = require("express");
@@ -7,44 +6,33 @@ const router = express.Router();
 const { validate, Genre } = require("../models/genre");
 
 //get genres of VIDLY
-router.get(
-  "/",
-  asyncMiddleware(async (req, res) => {
-    const genre = await Genre.find(); // Await the async function
-    res.send(genre);
-  })
-);
+router.get("/", async (req, res) => {
+  const genre = await Genre.find(); // Await the async function
+  res.send(genre);
+});
 //get genres by id
-router.get(
-  "/:id",
-  asyncMiddleware(async (req, res) => {
-    const genre = await Genre.findById(req.params.id); // Query the database
-    if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
-    res.json(genre); // Send the genre as JSON
-  })
-);
+router.get("/:id", async (req, res) => {
+  const genre = await Genre.findById(req.params.id); // Query the database
+  if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
+  res.json(genre); // Send the genre as JSON
+});
 //insert genres for VIDLY
-router.post(
-  "/",
-  auth,
-  asyncMiddleware(async (req, res) => {
-    // Validate the request body
-    const { error } = validate(req.body);
-    if (error)
-      return res.status(400).json({ message: error.details[0].message }); // Return validation error
+router.post("/", auth, async (req, res) => {
+  // Validate the request body
+  const { error } = validate(req.body);
+  if (error) return res.status(400).json({ message: error.details[0].message }); // Return validation error
 
-    // Create a new genre object
-    const genre = new Genre({
-      name: req.body.name,
-    });
+  // Create a new genre object
+  const genre = new Genre({
+    name: req.body.name,
+  });
 
-    // Save the genre to the database
-    const result = await genre.save();
+  // Save the genre to the database
+  const result = await genre.save();
 
-    // Return the new genre
-    res.status(201).json(result); // 201 Created status code
-  })
-);
+  // Return the new genre
+  res.status(201).json(result); // 201 Created status code
+});
 //update the genre
 router.put("/:id", async (req, res) => {
   const { error } = validate(req.body);
