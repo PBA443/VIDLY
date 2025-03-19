@@ -1,3 +1,4 @@
+const auth = require("../middleware/auth");
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
@@ -25,7 +26,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 //insert genres for VIDLY
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     // Validate the request body
     const { error } = validate(req.body);
