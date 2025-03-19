@@ -7,6 +7,7 @@ const { validate, Genre } = require("../models/genre");
 
 //get genres of VIDLY
 router.get("/", async (req, res) => {
+  throw new Error("could not get the genres");
   const genre = await Genre.find(); // Await the async function
   res.send(genre);
 });
