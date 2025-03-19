@@ -35,7 +35,7 @@ router.post("/", auth, async (req, res) => {
 
     // Create a new genre object
     const genre = new Genre({
-      name: req.body.genre,
+      name: req.body.name,
     });
 
     // Save the genre to the database
