@@ -4,15 +4,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const { validate, Genre } = require("../models/genre");
+const validateObjectId = require("../middleware/validateObjectId");
 
 //get genres of VIDLY
 router.get("/", async (req, res) => {
-  throw new Error("could not get the genres");
   const genre = await Genre.find(); // Await the async function
   res.send(genre);
 });
 //get genres by id
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const genre = await Genre.findById(req.params.id); // Query the database
   if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
   res.json(genre); // Send the genre as JSON
@@ -35,7 +35,7 @@ router.post("/", auth, async (req, res) => {
   res.status(201).json(result); // 201 Created status code
 });
 //update the genre
-router.put("/:id", async (req, res) => {
+router.put("/:id", validateObjectId, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(404).send(error);
   const genre = await Genre.findByIdAndUpdate(req.params.id, {
@@ -48,7 +48,7 @@ router.put("/:id", async (req, res) => {
   );
 });
 //delete the genre
-router.delete("/:id", [auth, admin], async (req, res) => {
+router.delete("/:id", validateObjectId, [auth, admin], async (req, res) => {
   const genre = await Genre.findByIdAndDelete(req.params.id);
   if (!genre) return res.status(404).send("ID is not found");
   return res.send(`sucessfully deleted the id ${req.params.id}`);
