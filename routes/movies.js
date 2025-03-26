@@ -36,12 +36,11 @@ router.post("/", async (req, res) => {
     if (!genre) return res.status(400).send("Invalid genre");
     // Create a new movie object
     const movie = new Movie({
-      movieName: req.body.movieName,
+      title: req.body.title,
       genre: {
         _id: genre._id,
         name: genre.name,
       },
-      director: req.body.director,
       numberInStock: req.body.numberInStock,
       dailyRentalRate: req.body.dailyRentalRate,
     });
@@ -59,16 +58,24 @@ router.post("/", async (req, res) => {
 //update the movie
 router.put("/:id", async (req, res) => {
   const { error } = validate(req.body);
-  if (error) return res.status(404).send(error);
-  const movie = await Movie.findByIdAndUpdate(req.params.id, {
-    movie: req.body.movie,
-  });
-  if (!movie) return res.status(404).send("ID is not found");
+  if (error) return res.status(400).send(error.details[0].message);
 
-  return res.send(
-    `succcessfully updated the id:${req.params.id} with ${req.body.movie}`
-  );
+  try {
+    const movie = await Movie.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    if (!movie) return res.status(404).send("Movie with given ID not found");
+
+    return res.send(`Successfully updated movie: ${JSON.stringify(movie)}`);
+  } catch (error) {
+    console.error("Error updating movie:", error);
+    return res.status(500).send("Internal Server Error");
+  }
 });
+
 //delete the movie
 router.delete("/:id", async (req, res) => {
   const movie = await Movie.findByIdAndDelete(req.params.id);

@@ -15,25 +15,29 @@ router.get("/", async (req, res) => {
 router.get("/:id", validateObjectId, async (req, res) => {
   const genre = await Genre.findById(req.params.id); // Query the database
   if (!genre) return res.status(404).json({ message: "Genre not found" }); // Handle not found
-  res.json(genre); // Send the genre as JSON
+  res.send(genre); // Send the genre as JSON
 });
 //insert genres for VIDLY
-router.post("/", auth, async (req, res) => {
-  // Validate the request body
-  const { error } = validate(req.body);
-  if (error) return res.status(400).json({ message: error.details[0].message }); // Return validation error
+router.post(
+  "/",
+  /* auth, */ async (req, res) => {
+    // Validate the request body
+    const { error } = validate(req.body);
+    if (error)
+      return res.status(400).json({ message: error.details[0].message }); // Return validation error
 
-  // Create a new genre object
-  const genre = new Genre({
-    name: req.body.name,
-  });
+    // Create a new genre object
+    const genre = new Genre({
+      name: req.body.name,
+    });
 
-  // Save the genre to the database
-  const result = await genre.save();
+    // Save the genre to the database
+    const result = await genre.save();
 
-  // Return the new genre
-  res.status(201).json(result); // 201 Created status code
-});
+    // Return the new genre
+    res.status(201).json(result); // 201 Created status code
+  }
+);
 //update the genre
 router.put("/:id", validateObjectId, async (req, res) => {
   const { error } = validate(req.body);
@@ -48,10 +52,14 @@ router.put("/:id", validateObjectId, async (req, res) => {
   );
 });
 //delete the genre
-router.delete("/:id", validateObjectId, [auth, admin], async (req, res) => {
-  const genre = await Genre.findByIdAndDelete(req.params.id);
-  if (!genre) return res.status(404).send("ID is not found");
-  return res.send(`sucessfully deleted the id ${req.params.id}`);
-});
+router.delete(
+  "/:id",
+  validateObjectId,
+  /*  [auth, admin], */ async (req, res) => {
+    const genre = await Genre.findByIdAndDelete(req.params.id);
+    if (!genre) return res.status(404).send("ID is not found");
+    return res.send(`sucessfully deleted the id ${req.params.id}`);
+  }
+);
 
 module.exports = router;

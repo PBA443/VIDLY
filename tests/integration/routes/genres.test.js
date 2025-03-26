@@ -23,9 +23,9 @@ describe("/api/genres", () => {
   describe("GET /", () => {
     it("should return all genres", async () => {
       Genre.collection.insertMany([
-        { name: "genre1" },
-        { name: "genre2" },
-        { name: "genre3" },
+        { name: "Sci-Fi" },
+        { name: "Action" },
+        { name: "Comedy" },
       ]);
       const res = await request(server).get("/api/genres");
       expect(res.status).toBe(200);
@@ -71,7 +71,7 @@ describe("POST /", () => {
   };
   beforeEach(() => {
     token = new User().generateAuthToken();
-    name = "genre1";
+    name = "Thriller";
   });
   it("should return 401 if client is not logged in", async () => {
     token = "";
