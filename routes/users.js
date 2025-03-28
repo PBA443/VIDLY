@@ -30,8 +30,9 @@ router.post("/", async (req, res) => {
     const token = user.generateAuthToken();
     res
       .header("x-auth-token", token)
+      .header("access-control-expose-headers", "x-auth-token")
       .status(201)
-      .json(_.pick(user, ["name", "email"])); // 201 Created status code
+      .send(_.pick(user, ["name", "email"])); // 201 Created status code
   } catch (error) {
     console.error("Error creating user:", error.message);
     res.status(500).json({ message: "Internal Server Error" }); // Handle errors

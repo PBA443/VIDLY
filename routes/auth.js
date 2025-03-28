@@ -37,7 +37,7 @@ function validate(user) {
     password: joiPassword
       .string()
       .minOfSpecialCharacters(1)
-      .minOfLowercase(3)
+      .minOfLowercase(1)
       .minOfUppercase(1)
       .minOfNumeric(1)
       .noWhiteSpaces()

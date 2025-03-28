@@ -18,26 +18,22 @@ router.get("/:id", validateObjectId, async (req, res) => {
   res.send(genre); // Send the genre as JSON
 });
 //insert genres for VIDLY
-router.post(
-  "/",
-  /* auth, */ async (req, res) => {
-    // Validate the request body
-    const { error } = validate(req.body);
-    if (error)
-      return res.status(400).json({ message: error.details[0].message }); // Return validation error
+router.post("/", auth, async (req, res) => {
+  // Validate the request body
+  const { error } = validate(req.body);
+  if (error) return res.status(400).json({ message: error.details[0].message }); // Return validation error
 
-    // Create a new genre object
-    const genre = new Genre({
-      name: req.body.name,
-    });
+  // Create a new genre object
+  const genre = new Genre({
+    name: req.body.name,
+  });
 
-    // Save the genre to the database
-    const result = await genre.save();
+  // Save the genre to the database
+  const result = await genre.save();
 
-    // Return the new genre
-    res.status(201).json(result); // 201 Created status code
-  }
-);
+  // Return the new genre
+  res.status(201).json(result); // 201 Created status code
+});
 //update the genre
 router.put("/:id", validateObjectId, async (req, res) => {
   const { error } = validate(req.body);
