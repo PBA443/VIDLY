@@ -1,6 +1,9 @@
 {
-  "name": "vidly",
+  "name": "@donbhagy/vidly",
   "version": "1.0.0",
+  "publishConfig": {
+    "registry": "http://34.27.3.115:8081/repository/npm-hosted/"
+  },
   "description": "imaginary video stream app",
   "main": "index.js",
   "scripts": {
@@ -19,6 +22,7 @@
   },
   "homepage": "https://github.com/PBA443/VIDLY#readme",
   "dependencies": {
+    "@donbhagy/vidly": "file:",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
